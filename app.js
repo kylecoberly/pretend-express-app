@@ -4,20 +4,18 @@ const app = express();
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
-const users = [
-    "Kyle",
-    "Dan",
-    "Brooks",
-    "CJ"
-];
+const database = require("./database_connection");
 
 app.get("/", (request, response) => {
-    response.json({users});
+    database("user").select("*").then(users => {
+        response.json({users});
+    })
 });
 
 app.post("/", (request, response) => {
-    users.push(request.body.user);
-    response.sendStatus(201);
+    database("user").insert(request.body).then(user => {
+        response.sendStatus(201);
+    })
 });
 
 app.listen(process.env.PORT || 3000, () => {
